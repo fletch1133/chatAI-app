@@ -118,7 +118,7 @@ class FeedForward(nn.Module):
 
 class Block(nn.Module):
 
-    def __init__(self, n_embd, n_head):
+    def __init__(self, n_embd, n_head):    #CHANGES
         # n_embd: embedding dimension, n_head: the number of heads we'd like
         super().__init__()
         head_size = n_embd // n_head
@@ -134,7 +134,7 @@ class Block(nn.Module):
 
 class GPTLanguageModel(nn.Module):
 
-    def __init__(self):
+    def __init__(self, vocab_size, n_head, n_embd, n_layer):   # CHANGES
         super().__init__()
         # Each token directly reads off the logits for the next token from a lookup table
         self.token_embedding_table = nn.Embedding(vocab_size, n_embd) 
@@ -175,11 +175,11 @@ class GPTLanguageModel(nn.Module):
         
         return logits, loss
 
-    def generate(self, idx, max_new_token):
+    def generate(self, idx, block_size, max_new_tokens):
         # idx is (B, T) array of indices in the current context
 
         for _ in range(max_new_tokens):
-            # Crop idx to las block_size token
+            # Crop idx to las block_size token 
             idx_cond = idx[:, -block_size] 
 
             # Get the prediction
@@ -199,7 +199,7 @@ class GPTLanguageModel(nn.Module):
 
         return idx
 
-model = GPTLanguageModel()
+model = GPTLanguageModel(vocab_size, n_head, n_embd, n_layer)
 m = model.to(device) 
 # Print number of params in model
 print(sum(p.numel() for p in m.parameters())/1e6, 'M parameters') 
